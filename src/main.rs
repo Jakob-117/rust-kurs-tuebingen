@@ -31,12 +31,23 @@ mod test {
 
     #[test]
     fn test_my_programm() {
-        let test_vec_list : Vec<String> = ["foo", "1"]
+        let test_vec_list = ["foo", "1"]
         .into_iter()//gibt keine referenz an die objekte ansonsten hätten wir eine referenz auf referenz
-        .map(|s| String::from(s))
-        .collect();
-        let test_vec = vec![String::from("foo"), String::from("1")];
-        args_programm(test_vec);
+        .map(|s| String::from(s))//map geht über die einzelnen objekte in der liste (iterativ) per iteration nimmt er das s in die closure und wird hier wird s dann zum String convertiert
+        .collect(); //ohne collect würde nichts passieren, iter gibt hier nichts zurück.
+        //let test_vec = vec![String::from("foo"), String::from("1")];
+        args_programm(test_vec_list);
+    }
+
+    #[test]
+    fn test_my_programm_withoutclosure() {
+
+        let test_vec_list = ["foo", "1"]
+        .into_iter()//gibt keine referenz an die objekte ansonsten hätten wir eine referenz auf referenz
+        .map(String::from)//Falls nur eine Funktion von Closure aufgerufen wird braucht man die closure nicht (spart einen funktionsaufruf pro iteration)
+        .collect(); //ohne collect würde nichts passieren, iter gibt hier nichts zurück.
+        //let test_vec = vec![String::from("foo"), String::from("1")];
+        args_programm(test_vec_list);
     }
 
     #[test]
