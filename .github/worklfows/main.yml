@@ -1,4 +1,4 @@
-on: 
+on:
   - push
   - pull_request
 
@@ -16,6 +16,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: check
+
   fmt:
     name: Format
     runs-on: ubuntu-latest
