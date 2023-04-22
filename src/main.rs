@@ -1,56 +1,47 @@
-use std::env::args;
+use std::f32;
+use std::io;
+use std::io::Stdin;
 use std::io::Write;
-use std::io::{self, Stdin};
 use std::str::FromStr;
 
-struct Weight{ //8 Byte groß, dank Zero cost abstractions
-    value: f64
-}
+struct Weight(f64); //8 Byte groß, dank Zero cost abstractions
 
 struct Height(f64); //geht auch so, damit kann man mit Height.0 drauf zu greifen -> um .0 weg zu bekommen, muss man den Display trait implementieren (anstrengend)
 
-struct BMI{
-    value: f64
-}
+struct BMI(f64);
+/*
+impl Drop for BMI{ //destructor for structs -> normally generated from the compiler -> braucht man praktisch nie
+    fn drop(&mut self){ //kein quatsch in diesem Block machen, man kann mit &mut noch innerhalb was ändern, aber wird dann sofort gedroppt
+        todo!()
+    }
+}*/
 
 fn main() {
-    let stdin = std::io::stdin();
-    let weight = get_weight(&stdin);
-    println!("Weigth: {weight}");
+    let mut stdin = std::io::stdin();
 
-    let height = get_height(&stdin);
-    println!("Heigth: {height}");
-    let bmi = bmi_calc(height, weight);
-    println!("BMI: {bmi}");
+    println!("Bitte Gewicht eingeben (in kg): ");
+    let weight: Weight = Weight(get_input(&stdin));
+
+    println!("Bitte Größe eingeben (in meter): ");
+    let height: Height = Height(get_input(&stdin));
+    drop(stdin);
+
+    // kg / m^2 = BMI
+    let bmi = calculate_bmi(height, weight);
+
+    println!("Dein BMI: {}", bmi.0);
 }
 
-
-
-fn get_weight(input: &Stdin) -> f64 {
-    print!("Gebe dein Gewicht in kg ein: ");
-    let _ = std::io::stdout().flush(); //flush is to really print the stuff
-
-    let mut buffer_weight = String::new();
-    input.read_line(&mut buffer_weight).unwrap();
-    println!(" ");
-
-    let weight = f64::from_str(buffer_weight.trim()).unwrap(); //trim() removed das trailing "enter" also \n was durch das enter drücken mit kommt -> \n kann nicht geparset werden
-    weight
-}
-
-fn get_height(input: &Stdin) -> f64 {
-    print!("Gebe deine Höhe in Meter ein: ");
-    let _ = std::io::stdout().flush(); //to really print the stuff
-
+fn get_input(stdin: &Stdin) -> f64 {
     let mut buffer_height = String::new();
-    input.read_line(&mut buffer_height).unwrap();
-    println!(" ");
-
-    let height = f64::from_str(buffer_height.trim()).unwrap();
-    height
+    match stdin.read_line(&mut buffer_height) {
+        Ok(usize) => f64::from_str(buffer_height.trim()).unwrap(),
+        Err(e) => panic!("There is something wrong: {}", e),
+    }
 }
 
-fn bmi_calc(height: f64, weight: f64) -> f64 {
-    let bmi = weight / (height * height);
-    bmi
+// calculates bmi based on height and weight
+fn calculate_bmi(height: Height, weight: Weight) -> BMI {
+    let bmi = weight.0 / (f64::powf(height.0, 2.0));
+    BMI(bmi)
 }
