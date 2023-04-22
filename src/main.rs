@@ -3,6 +3,16 @@ use std::io::Write;
 use std::io::{self, Stdin};
 use std::str::FromStr;
 
+struct Weight{ //8 Byte groß, dank Zero cost abstractions
+    value: f64
+}
+
+struct Height(f64); //geht auch so, damit kann man mit Height.0 drauf zu greifen -> um .0 weg zu bekommen, muss man den Display trait implementieren (anstrengend)
+
+struct BMI{
+    value: f64
+}
+
 fn main() {
     let stdin = std::io::stdin();
     let weight = get_weight(&stdin);
@@ -13,6 +23,8 @@ fn main() {
     let bmi = bmi_calc(height, weight);
     println!("BMI: {bmi}");
 }
+
+
 
 fn get_weight(input: &Stdin) -> f64 {
     print!("Gebe dein Gewicht in kg ein: ");
