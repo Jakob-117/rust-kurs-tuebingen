@@ -1,8 +1,7 @@
 use std::env::args;
+use std::io::Write;
 use std::io::{self, Stdin};
 use std::str::FromStr;
-use std::io::Write;
-
 
 fn main() {
     let stdin = std::io::stdin();
@@ -15,9 +14,7 @@ fn main() {
     println!("BMI: {bmi}");
 }
 
-
 fn get_weight(input: &Stdin) -> f64 {
-    
     print!("Gebe dein Gewicht in kg ein: ");
     let _ = std::io::stdout().flush(); //flush is to really print the stuff
 
@@ -29,9 +26,7 @@ fn get_weight(input: &Stdin) -> f64 {
     weight
 }
 
-
 fn get_height(input: &Stdin) -> f64 {
-
     print!("Gebe deine Höhe in Meter ein: ");
     let _ = std::io::stdout().flush(); //to really print the stuff
 
@@ -43,9 +38,7 @@ fn get_height(input: &Stdin) -> f64 {
     height
 }
 
-
-
-fn bmi_calc(height: f64, weight: f64) -> f64{
+fn bmi_calc(height: f64, weight: f64) -> f64 {
     let bmi = weight / (height * height);
     bmi
 }
