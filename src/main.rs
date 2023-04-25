@@ -1,7 +1,7 @@
-use std::f32;
-use std::io;
+//use std::f32;
+//use std::io;
 use std::io::Stdin;
-use std::io::Write;
+//use std::io::Write;
 use std::str::FromStr;
 
 struct Weight(f64); //8 Byte groß, dank Zero cost abstractions
@@ -17,14 +17,19 @@ impl Drop for BMI{ //destructor for structs -> normally generated from the compi
 }*/
 
 fn main() {
-    let mut stdin = std::io::stdin();
+    //To calculate your BMI with your weight and height as input.
+    start_bmi_calculation();
+}
+
+fn start_bmi_calculation() {
+    let stdin = std::io::stdin();
 
     println!("Bitte Gewicht eingeben (in kg): ");
     let weight: Weight = Weight(get_input(&stdin));
 
     println!("Bitte Größe eingeben (in meter): ");
     let height: Height = Height(get_input(&stdin));
-    drop(stdin);
+    //drop(stdin);
 
     // kg / m^2 = BMI
     let bmi = calculate_bmi(height, weight);
@@ -35,13 +40,38 @@ fn main() {
 fn get_input(stdin: &Stdin) -> f64 {
     let mut buffer_height = String::new();
     match stdin.read_line(&mut buffer_height) {
-        Ok(usize) => f64::from_str(buffer_height.trim()).unwrap(),
-        Err(e) => panic!("There is something wrong: {}", e),
+        Ok(_usize) => f64::from_str(buffer_height.trim()).unwrap_or_else(|err| {
+            println!("There was a parsing error: {}", err);
+            println!("Try again!");
+            get_input(stdin)
+        }),
+        Err(e) => {
+            println!("Input is not the right format or type: {}", e);
+            println!("Try again!");
+            get_input(stdin)
+        }
     }
 }
 
 // calculates bmi based on height and weight
 fn calculate_bmi(height: Height, weight: Weight) -> BMI {
+    if height.0 == 0.0 {
+        println!("Cannot divide by zero!");
+        println!("Try again!");
+        start_bmi_calculation()
+    }
     let bmi = weight.0 / (f64::powf(height.0, 2.0));
     BMI(bmi)
 }
+
+/*
+#[cfg(test)]
+mod tests{
+    use super::get_input;
+    #[test]
+    fn test_input(){
+        let mut stdin = std::io::stdin();
+
+    }
+}
+*/
