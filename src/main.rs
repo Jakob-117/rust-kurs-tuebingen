@@ -3,12 +3,11 @@
 use std::io::Stdin;
 //use std::io::Write;
 use std::str::FromStr;
-
 struct Weight(f64); //8 Byte groß, dank Zero cost abstractions
 
 struct Height(f64); //geht auch so, damit kann man mit Height.0 drauf zu greifen -> um .0 weg zu bekommen, muss man den Display trait implementieren (anstrengend)
 
-struct BMI(f64);
+struct Bmi(f64);
 /*
 impl Drop for BMI{ //destructor for structs -> normally generated from the compiler -> braucht man praktisch nie
     fn drop(&mut self){ //kein quatsch in diesem Block machen, man kann mit &mut noch innerhalb was ändern, aber wird dann sofort gedroppt
@@ -54,14 +53,14 @@ fn get_input(stdin: &Stdin) -> f64 {
 }
 
 // calculates bmi based on height and weight
-fn calculate_bmi(height: Height, weight: Weight) -> BMI {
+fn calculate_bmi(height: Height, weight: Weight) -> Bmi {
     if height.0 == 0.0 {
         println!("Cannot divide by zero!");
         println!("Try again!");
         start_bmi_calculation()
     }
     let bmi = weight.0 / (f64::powf(height.0, 2.0));
-    BMI(bmi)
+    Bmi(bmi)
 }
 
 /*
