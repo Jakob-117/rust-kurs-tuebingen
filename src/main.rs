@@ -1,7 +1,4 @@
-//use std::f32;
-//use std::io;
 use std::io::Stdin;
-//use std::io::Write;
 use std::str::FromStr;
 struct Weight(f64); //8 Byte groß, dank Zero cost abstractions
 
