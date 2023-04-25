@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "Rust-Kurs-Tuebingen"
+name = "rust-kurs-tuebingen"
 version = "0.1.0"
