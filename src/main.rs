@@ -1,16 +1,17 @@
 use std::io::Stdin;
 use std::str::FromStr;
-struct Weight(f64); //8 Byte groß, dank Zero cost abstractions
 
-struct Height(f64); //geht auch so, damit kann man mit Height.0 drauf zu greifen -> um .0 weg zu bekommen, muss man den Display trait implementieren (anstrengend)
+use crate::bmi::Bmi;
+use crate::errors::BmiError;
+use crate::height::Height;
+use crate::weight::Weight;
+//use crate::errors::InputError;
 
-struct Bmi(f64);
-/*
-impl Drop for BMI{ //destructor for structs -> normally generated from the compiler -> braucht man praktisch nie
-    fn drop(&mut self){ //kein quatsch in diesem Block machen, man kann mit &mut noch innerhalb was ändern, aber wird dann sofort gedroppt
-        todo!()
-    }
-}*/
+mod bmi;
+mod errors;
+mod height;
+mod test;
+mod weight;
 
 fn main() {
     //To calculate your BMI with your weight and height as input.
@@ -29,16 +30,17 @@ fn start_bmi_calculation() {
 
     // kg / m^2 = BMI
     let bmi = calculate_bmi(height, weight);
-
-    println!("Dein BMI: {}", bmi.0);
+    match bmi {
+        Ok(bmi) => println!("Dein BMI: {}", bmi.value()), //Bmi::value(&bmi) funktioniert auch statt bmi.value() //ruft die funktion value von der instanz bmi auf
+        Err(_e) => println!("the height value is not ok"),
+    };
 }
 
 fn get_input(stdin: &Stdin) -> f64 {
     let mut buffer_height = String::new();
     match stdin.read_line(&mut buffer_height) {
         Ok(_usize) => f64::from_str(buffer_height.trim()).unwrap_or_else(|err| {
-            println!("There was a parsing error: {}", err);
-            println!("Try again!");
+            println!("blabla: {}", err);
             get_input(stdin)
         }),
         Err(e) => {
@@ -50,24 +52,17 @@ fn get_input(stdin: &Stdin) -> f64 {
 }
 
 // calculates bmi based on height and weight
-fn calculate_bmi(height: Height, weight: Weight) -> Bmi {
+pub fn calculate_bmi(height: Height, weight: Weight) -> Result<Bmi, BmiError> {
     if height.0 == 0.0 {
-        println!("Cannot divide by zero!");
-        println!("Try again!");
-        start_bmi_calculation()
+        println!("0");
+        return Err(BmiError::HeightIsZero);
+    } else if height.0 < 0.0 {
+        println!("negative");
+        return Err(BmiError::HeightIsNegative);
+    } else if weight.0 <= 0.0 {
+        println!("Weight is not ok");
+        return Err(BmiError::WeightIsNotOk);
     }
     let bmi = weight.0 / (f64::powf(height.0, 2.0));
-    Bmi(bmi)
+    Ok(Bmi::new(bmi)) //kreiert ein neue Bmi instanz
 }
-
-/*
-#[cfg(test)]
-mod tests{
-    use super::get_input;
-    #[test]
-    fn test_input(){
-        let mut stdin = std::io::stdin();
-
-    }
-}
-*/
