@@ -14,6 +14,9 @@ mod test;
 mod weight;
 
 fn main() {
+    env_logger::init();
+
+    log::info!("Programm started");
     //To calculate your BMI with your weight and height as input.
     start_bmi_calculation();
 }
@@ -26,6 +29,7 @@ fn start_bmi_calculation() {
 
     println!("Bitte Größe eingeben (in meter): ");
     let height: Height = Height(get_input(&stdin));
+    log::debug!("Got the input height and weight.");
     //drop(stdin);
 
     // kg / m^2 = BMI
