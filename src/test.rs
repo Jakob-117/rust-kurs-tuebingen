@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use float_eq::assert_float_eq;
+
     use crate::{calculate_bmi, BmiError, Height, Weight};
 
     #[test]
@@ -7,7 +9,7 @@ mod tests {
         let weight: Weight = Weight(69.0);
         let height: Height = Height(1.69);
         let result = calculate_bmi(height, weight).unwrap();
-        assert_eq!(result.value(), (69.0 / (1.69 * 1.69)));
+        assert_float_eq!(result.value(), 24.15, abs <= 0.01);
     }
     #[test]
     fn test_calculate_bad() {
