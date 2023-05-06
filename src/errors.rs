@@ -1,11 +1,11 @@
 #[derive(Debug, PartialEq)]
-pub enum BmiError{
+pub enum BmiError {
     HeightIsZero,
     HeightIsNegative,
-    WeightIsNotOk
+    WeightIsNotOk,
 }
 
 #[derive(Debug)]
-pub enum InputError{
+pub enum InputError {
     //InputIsntStd
 }

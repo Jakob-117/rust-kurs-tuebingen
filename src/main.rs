@@ -1,22 +1,19 @@
 use std::io::Stdin;
 use std::str::FromStr;
 
-use crate::weight::Weight;
-use crate::height::Height;
 use crate::bmi::Bmi;
 use crate::errors::BmiError;
+use crate::height::Height;
+use crate::weight::Weight;
 //use crate::errors::InputError;
 
-mod test;
 mod bmi;
-mod weight;
-mod height;
 mod errors;
-
+mod height;
+mod test;
+mod weight;
 
 fn main() {
-
-
     //To calculate your BMI with your weight and height as input.
     start_bmi_calculation();
 }
@@ -35,9 +32,8 @@ fn start_bmi_calculation() {
     let bmi = calculate_bmi(height, weight);
     match bmi {
         Ok(bmi) => println!("Dein BMI: {}", bmi.value()), //Bmi::value(&bmi) funktioniert auch statt bmi.value() //ruft die funktion value von der instanz bmi auf
-        Err(_e) => println!("the height value is not ok")
+        Err(_e) => println!("the height value is not ok"),
     };
-    
 }
 
 fn get_input(stdin: &Stdin) -> f64 {
@@ -59,13 +55,13 @@ fn get_input(stdin: &Stdin) -> f64 {
 pub fn calculate_bmi(height: Height, weight: Weight) -> Result<Bmi, BmiError> {
     if height.0 == 0.0 {
         println!("0");
-        return Err(BmiError::HeightIsZero)
-    } else if height.0 < 0.0{
+        return Err(BmiError::HeightIsZero);
+    } else if height.0 < 0.0 {
         println!("negative");
-        return Err(BmiError::HeightIsNegative)
-    } else if weight.0 <= 0.0{
+        return Err(BmiError::HeightIsNegative);
+    } else if weight.0 <= 0.0 {
         println!("Weight is not ok");
-        return Err(BmiError::WeightIsNotOk)
+        return Err(BmiError::WeightIsNotOk);
     }
     let bmi = weight.0 / (f64::powf(height.0, 2.0));
     Ok(Bmi::new(bmi)) //kreiert ein neue Bmi instanz
