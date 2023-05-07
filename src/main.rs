@@ -3,15 +3,18 @@ use crate::errors::BmiError;
 use crate::height::Height;
 use crate::weight::Weight;
 //use crate::errors::InputError;
+use crate::serde::BmiJson;
+use time::Time; //Todo Date!
 
+use std::borrow::Borrow;
 use std::fs::File;
 use std::io::Write;
 
 use inquire::CustomType;
-
 mod bmi;
 mod errors;
 mod height;
+mod serde;
 mod test;
 mod weight;
 
@@ -29,7 +32,7 @@ fn start_bmi_calculation() {
         .with_error_message("Can I get a water please?")
         .with_help_message("Type the amount of weight in this format 00.0")
         .prompt()
-        .map(Weight)
+        .map(Weight::new)
         .unwrap_or_else(|err| {
             eprintln!("Something went wrong: {err:?}");
             std::process::exit(1)
@@ -40,7 +43,7 @@ fn start_bmi_calculation() {
         .with_error_message("Can I get a water please?")
         .with_help_message("Type your height in this format 0.00")
         .prompt()
-        .map(Height)
+        .map(Height::new)
         .unwrap_or_else(|err| {
             eprintln!("Something went wrong: {err:?}");
             std::process::exit(1)
@@ -50,7 +53,7 @@ fn start_bmi_calculation() {
     //drop(stdin);
 
     // kg / m^2 = BMI
-    let bmi = calculate_bmi(height, weight);
+    let bmi = calculate_bmi(height.borrow(), weight.borrow());
     match bmi {
         Ok(bmi) => {
             println!("Dein BMI: {}", bmi.value()); //Bmi::value(&bmi) funktioniert auch statt bmi.value() //ruft die funktion value von der instanz bmi auf
@@ -68,7 +71,17 @@ fn start_bmi_calculation() {
                     std::process::exit(1)
                 }
             };
-            writeln!(&mut bmi_file, "Bmi:{}", bmi.value()).unwrap();
+            let time = Time::MIDNIGHT;
+            let object = BmiJson {
+                height,
+                weight,
+                time,
+            };
+            let j = serde_json::to_string(&object).unwrap_or_else(|err| {
+                eprintln!("Something went wrong: {err:?}");
+                std::process::exit(1)
+            });
+            writeln!(&mut bmi_file, "Bmi:{}, other info: {}", bmi.value(), j).unwrap();
         }
         Err(_e) => {
             println!("the height value is not ok:");
@@ -78,17 +91,21 @@ fn start_bmi_calculation() {
 }
 
 // calculates bmi based on height and weight
-pub fn calculate_bmi(height: Height, weight: Weight) -> Result<Bmi, BmiError> {
-    if height.0 == 0.0 {
+pub fn calculate_bmi(height: &Height, weight: &Weight) -> Result<Bmi, BmiError> {
+    if height.value() == 0.0 {
         println!("0");
         return Err(BmiError::HeightIsZero);
-    } else if height.0 < 0.0 {
+    } else if height.value() < 0.0 {
         println!("negative");
         return Err(BmiError::HeightIsNegative);
-    } else if weight.0 <= 0.0 {
+    } else if weight.value() <= 0.0 {
         println!("Weight is not ok");
         return Err(BmiError::WeightIsNotOk);
     }
-    let bmi = weight.0 / (f64::powf(height.0, 2.0));
+    let bmi = weight.value() / (f64::powf(height.value(), 2.0));
     Ok(Bmi::new(bmi)) //kreiert ein neue Bmi instanz
+}
+
+pub fn make_json_object() {
+    todo!()
 }
