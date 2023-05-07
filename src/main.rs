@@ -1,11 +1,13 @@
-use std::io::Stdin;
-use std::str::FromStr;
-
 use crate::bmi::Bmi;
 use crate::errors::BmiError;
 use crate::height::Height;
 use crate::weight::Weight;
 //use crate::errors::InputError;
+
+use std::fs::File;
+use std::io::Write;
+
+use inquire::CustomType;
 
 mod bmi;
 mod errors;
@@ -22,37 +24,57 @@ fn main() {
 }
 
 fn start_bmi_calculation() {
-    let stdin = std::io::stdin();
+    let weight: Weight = CustomType::<f64>::new("Your weight in kg please")
+        .with_formatter(&|i| format!("kg{:.2}", i))
+        .with_error_message("Can I get a water please?")
+        .with_help_message("Type the amount of weight in this format 00.0")
+        .prompt()
+        .map(Weight)
+        .unwrap_or_else(|err| {
+            eprintln!("Something went wrong: {err:?}");
+            std::process::exit(1)
+        });
 
-    println!("Bitte Gewicht eingeben (in kg): ");
-    let weight: Weight = Weight(get_input(&stdin));
+    let height: Height = CustomType::<f64>::new("Your height in meter please")
+        .with_formatter(&|i| format!("m{:.2}", i))
+        .with_error_message("Can I get a water please?")
+        .with_help_message("Type your height in this format 0.00")
+        .prompt()
+        .map(Height)
+        .unwrap_or_else(|err| {
+            eprintln!("Something went wrong: {err:?}");
+            std::process::exit(1)
+        });
 
-    println!("Bitte Größe eingeben (in meter): ");
-    let height: Height = Height(get_input(&stdin));
     log::debug!("Got the input height and weight.");
     //drop(stdin);
 
     // kg / m^2 = BMI
     let bmi = calculate_bmi(height, weight);
     match bmi {
-        Ok(bmi) => println!("Dein BMI: {}", bmi.value()), //Bmi::value(&bmi) funktioniert auch statt bmi.value() //ruft die funktion value von der instanz bmi auf
-        Err(_e) => println!("the height value is not ok"),
-    };
-}
-
-fn get_input(stdin: &Stdin) -> f64 {
-    let mut buffer_height = String::new();
-    match stdin.read_line(&mut buffer_height) {
-        Ok(_usize) => f64::from_str(buffer_height.trim()).unwrap_or_else(|err| {
-            println!("blabla: {}", err);
-            get_input(stdin)
-        }),
-        Err(e) => {
-            println!("Input is not the right format or type: {}", e);
-            println!("Try again!");
-            get_input(stdin)
+        Ok(bmi) => {
+            println!("Dein BMI: {}", bmi.value()); //Bmi::value(&bmi) funktioniert auch statt bmi.value() //ruft die funktion value von der instanz bmi auf
+            let mut bmi_file = match File::options()
+                .create(true)
+                .append(true)
+                .open("bmi_file.txt")
+            {
+                Ok(file) => {
+                    log::debug!("Created/opened a file");
+                    file
+                }
+                Err(e) => {
+                    log::error!("Creating/Opening file failed: {e:?}");
+                    std::process::exit(1)
+                }
+            };
+            writeln!(&mut bmi_file, "Bmi:{}", bmi.value()).unwrap();
         }
-    }
+        Err(_e) => {
+            println!("the height value is not ok:");
+            std::process::exit(1)
+        }
+    };
 }
 
 // calculates bmi based on height and weight
