@@ -4,7 +4,7 @@ use crate::height::Height;
 use crate::weight::Weight;
 //use crate::errors::InputError;
 use crate::serde::BmiJson;
-use time::Time; //Todo Date!
+use std::time::{Duration, SystemTime};
 
 use std::borrow::Borrow;
 use std::fs::File;
@@ -48,8 +48,15 @@ fn start_bmi_calculation() {
             eprintln!("Something went wrong: {err:?}");
             std::process::exit(1)
         });
+    let time = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap_or_else(|err| {
+            eprintln!("Something went wrong: {err:?}");
+            std::process::exit(1)
+        });
 
-    log::debug!("Got the input height and weight.");
+    println!("current date and time: {:?}", time.as_secs());
+    log::debug!("Got the input height, weight and time.");
     //drop(stdin);
 
     // kg / m^2 = BMI
@@ -71,17 +78,20 @@ fn start_bmi_calculation() {
                     std::process::exit(1)
                 }
             };
-            let time = Time::MIDNIGHT;
-            let object = BmiJson {
-                height,
-                weight,
-                time,
-            };
-            let j = serde_json::to_string(&object).unwrap_or_else(|err| {
+
+            let json_object = make_json_object(height, weight, time);
+            let json_string = make_json_string(json_object);
+
+            writeln!(
+                &mut bmi_file,
+                "Bmi:{}, other info: {}",
+                bmi.value(),
+                json_string
+            )
+            .unwrap_or_else(|err| {
                 eprintln!("Something went wrong: {err:?}");
                 std::process::exit(1)
             });
-            writeln!(&mut bmi_file, "Bmi:{}, other info: {}", bmi.value(), j).unwrap();
         }
         Err(_e) => {
             println!("the height value is not ok:");
@@ -106,6 +116,17 @@ pub fn calculate_bmi(height: &Height, weight: &Weight) -> Result<Bmi, BmiError> 
     Ok(Bmi::new(bmi)) //kreiert ein neue Bmi instanz
 }
 
-pub fn make_json_object() {
-    todo!()
+pub fn make_json_object(height: Height, weight: Weight, time: Duration) -> BmiJson {
+    BmiJson {
+        height,
+        weight,
+        time,
+    }
+}
+
+pub fn make_json_string(json_object: BmiJson) -> String {
+    serde_json::to_string(&json_object).unwrap_or_else(|err| {
+        eprintln!("Something went wrong: {err:?}");
+        std::process::exit(1)
+    })
 }

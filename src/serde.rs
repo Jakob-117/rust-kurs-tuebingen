@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use time::Time;
+use std::time::Duration;
 
 use crate::height::Height;
 use crate::weight::Weight;
@@ -8,5 +8,5 @@ use crate::weight::Weight;
 pub struct BmiJson {
     pub(crate) height: Height,
     pub(crate) weight: Weight,
-    pub(crate) time: Time,
+    pub(crate) time: Duration,
 }
