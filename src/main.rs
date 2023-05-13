@@ -1,6 +1,6 @@
 use crate::bmi::Bmi;
 use crate::clap_parser::Args;
-use crate::errors::{BmiError};
+use crate::errors::BmiError;
 use crate::height::Height;
 use crate::weight::Weight;
 //use crate::serde::BmiJson;
@@ -14,13 +14,13 @@ use std::borrow::Borrow;
 use inquire::CustomType;
 
 mod bmi;
+mod clap_parser;
+mod database;
 mod errors;
 mod height;
 mod serde; //framework welches funktionialität bereitstellt, um Daten in Maschinenlesbare Informationen zu konvertieren (Serialize / Deserialize)
 mod test;
 mod weight;
-mod clap_parser;
-mod database;
 
 fn main() {
     env_logger::init();
@@ -32,11 +32,11 @@ fn main() {
 
 fn start_bmi_calculation() {
     let cli = Args::parse();
-    if cli.database{
+    if cli.database {
         println!("Printing database");
         /* let contents = fs::read_to_string("bmi_file.txt").expect("Should have read the file.");
         println!("file content: {}", contents);*/
-        
+
         let database = crate::database::Database::load().expect("Opening database");
         database.print();
     } else {
@@ -64,7 +64,7 @@ fn start_bmi_calculation() {
             eprintln!("Something went wrong: {err:?}");
             std::process::exit(1)
         });
-   /* 
+    /*
     let timestamp:PrimitiveDateTime = {
         let now = time::OffsetDateTime::now_local().map_err(DatabaseError::from).unwrap();
         let time = now.time();
@@ -80,35 +80,35 @@ fn start_bmi_calculation() {
     match bmi {
         Ok(bmi) => {
             println!("Dein BMI: {}", bmi.value()); //Bmi::value(&bmi) funktioniert auch statt bmi.value() //ruft die funktion value von der instanz bmi auf
-            /*
-            let mut bmi_file = match File::options()
-                .create(true)
-                .append(true)
-                .open("bmi_file.txt")
-            {
-                Ok(file) => {
-                    log::debug!("Created/opened a file");
-                    file
-                }
-                Err(e) => {
-                    log::error!("Creating/Opening file failed: {e:?}");
-                    std::process::exit(1)
-                }
-            };
+                                                   /*
+                                                   let mut bmi_file = match File::options()
+                                                       .create(true)
+                                                       .append(true)
+                                                       .open("bmi_file.txt")
+                                                   {
+                                                       Ok(file) => {
+                                                           log::debug!("Created/opened a file");
+                                                           file
+                                                       }
+                                                       Err(e) => {
+                                                           log::error!("Creating/Opening file failed: {e:?}");
+                                                           std::process::exit(1)
+                                                       }
+                                                   };
 
-            let json_object = make_json_object(height, weight, timestamp);
-            let json_string = make_json_string(json_object);
+                                                   let json_object = make_json_object(height, weight, timestamp);
+                                                   let json_string = make_json_string(json_object);
 
-            writeln!(
-                &mut bmi_file,
-                "Bmi:{}, other info: {}",
-                bmi.value(),
-                json_string
-            )
-            .unwrap_or_else(|err| {
-                eprintln!("Something went wrong: {err:?}");
-                std::process::exit(1)
-            });*/
+                                                   writeln!(
+                                                       &mut bmi_file,
+                                                       "Bmi:{}, other info: {}",
+                                                       bmi.value(),
+                                                       json_string
+                                                   )
+                                                   .unwrap_or_else(|err| {
+                                                       eprintln!("Something went wrong: {err:?}");
+                                                       std::process::exit(1)
+                                                   });*/
 
             let entry = database::DatabaseEntry::new(bmi).expect("Creating database entry object");
             let mut database = crate::database::Database::load().expect("Opening database");

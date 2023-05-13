@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use time::{PrimitiveDateTime};
+use time::PrimitiveDateTime;
 
 use crate::height::Height;
 use crate::weight::Weight;

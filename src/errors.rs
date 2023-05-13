@@ -11,7 +11,7 @@ pub enum InputError {
 }
 
 #[derive(Debug, thiserror::Error)]
-pub enum DatabaseError{
+pub enum DatabaseError {
     #[error(transparent)]
     Io(#[from] std::io::Error),
 
@@ -19,5 +19,5 @@ pub enum DatabaseError{
     SerdeJson(#[from] serde_json::Error),
 
     #[error(transparent)]
-    IntermediateOffset(#[from] time::error::IndeterminateOffset)
+    IntermediateOffset(#[from] time::error::IndeterminateOffset),
 }

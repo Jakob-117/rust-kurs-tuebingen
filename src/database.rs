@@ -1,5 +1,5 @@
-use std::io::Write;
 use crate::errors::DatabaseError;
+use std::io::Write;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct DatabaseEntry {

@@ -1,7 +1,7 @@
-use clap::{Parser};
+use clap::Parser;
 
 #[derive(Parser)]
-pub struct Args{
+pub struct Args {
     #[clap(short, long)]
     pub(crate) database: bool,
 }
