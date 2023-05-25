@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+    <body>
+        <div>
+            <h1>Welcome to the bmi calculator</h1>
+            <ul>
+                {% for item in entries %}
+                    <li>{{ item.timestamp }} - {{ item.bmi }}</li>
+                {% endfor%}
+            </ul>
+        </div>
+    </body>
+</html>

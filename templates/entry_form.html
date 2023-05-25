@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+    <body>
+        <form action="/submit" method="post">
+            <div>
+                <label for="weight">Gewicht</label>
+                <input type="text" name="weight" id="weight" value="{{ weight }}" required/>
+            </div>
+
+            <div>
+                <label for="height">Größe</label>
+                <input type="text" name="height" id="height" value="{{ height }}" required/>
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </body>
+</html>

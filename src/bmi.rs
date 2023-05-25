@@ -1,4 +1,4 @@
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct Bmi {
     value: f64,
 }
